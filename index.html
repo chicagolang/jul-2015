@@ -67,10 +67,7 @@
           </section>
           <section>
             <h2>Day job</h2>
-            <p>I'm VP of Engineering at Public Good Software, a small tech startup in Chicago, that is building the future of philanthropy.</p>
-          </section>
-          <section>
-            <h1>Before that</h1>
+            <p>I'm VP of Engineering at Public Good Software, a small tech startup in Chicago.</p>
             <p>Prior to Public Good, I built technology for the Obama 2012 campaign, IBM, and Smart Chicago Collaborative.</p>
           </section>
           <section>
@@ -115,12 +112,43 @@
         </section>
 
         <section>
+          <section>
+            <h1>Why Go?</h1>
+          </section>
+          <section>
+            <p>We came out of a high-pressure, high-stakes environment and weren't happy with Ruby and Python.</p>
+          </section>
+          <section>
+            <p>Our initial plan for Public Good was a high-performance data integration platform.</p>
+          </section>
+          <section>
+            <h1>Go advantages</h1>
+            <p><small>(circa 2013)</small></p>
+            <ol>
+              <li>Strong bonafides</li>
+              <li>Statically typed</li>
+              <li>Super fast</li>
+              <li>Concurrency is built-in</li>
+              <li>Build/test/deploy/run cycle is straight-forward.</li>
+            </ol>
+          </section>
+          <section>
+            <h1>Go disadvantages (circa Jan 2013)</h1>
+            <ol>
+              <li>(relatively) new</li>
+              <li>Limited 3rd party tools and libraries</li>
+              <li>Not many examples of big production apps using Go</li>
+            </ol>
+          </section>
+        </section>
+
+        <section>
           <h1>Lessons</h1>
           <ol>
             <li>Structuring code is hard.</li>
             <li>Concurrency is awesome.</li>
-            <li>The Go ecosystem is robust.</li>
             <li>Deploying and running Go apps is easy.</li>
+            <li>The Go ecosystem is robust.</li>
           </ol>
         </section>
 
@@ -129,6 +157,77 @@
               <h1>Lesson &numero;1</h1>
               <h3>Structuring code is hard.</h3>
           </section>
+          <section>
+            <p>Our core platform has gone through three phases:</p>
+            <ol>
+              <li>Single API endpoint and a few background workers</li>
+              <li>Half-dozen services, spaghetti code</li>
+              <li>19 services, two dozen data models, many background jobs</li>
+            </ol>
+          </section>
+          <section>
+            <h3>Small Go apps are really simple and powerful</h3>
+            <p>When we had a single endpoint, builds were really fast, code was clean, and everything worked as a single binary.</p>
+          </section>
+          <section>
+            <h3>Growing code</h3>
+            <p>Many languages have prescriptive frameworks (e.g. Rails and Django) that enforce application structure.</p>
+            <p>Go is a language, not a framework, an code structure is left as an excercise for the reader.</p>
+          </section>
+          <section>
+            <h3>Use packages wisely</h3>
+            <p>For a while we had two core packages: <tt>services</tt> and <tt>data</tt>.</p>
+            <p>This was a pretty simple structure, but led to slower builds and bloated packages.</p>
+          </section>
+          <section>
+            <h3>Enter the Clean Architecture</h3>
+            <img src="http://blog.8thlight.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg" style="height:493px;width:670px;" />
+            <p><small>source: <a href="http://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">8th Light</a></small></p>
+          </section>
+          <section>
+            <h3>Our application stucture</h3>
+            <p>
+              <pre>
+                ./
+                  cmd/
+                      apiserver/
+                      worker/
+                      admin/
+                  lib/
+                      queue
+                      search
+                      ...
+                  model/
+                      person/
+                      payment/
+                      ...
+                  service/
+                      persons/
+                      payments/
+                      ...
+                  usecases/
+                      for_persons.go
+                      for_payments.go
+                  worker/
+                      counter.go
+                      payments.go
+                  main.go
+              </pre>
+            </p>
+          </section>
+          <section>
+            <p>Splitting code into <code>model</code>, <code>service</code>, and <code>usecases</code> enforces a separation of interests,
+              makes the code more modular, and keeps packages small and lean.</p>
+          </section>
+          <section>
+            <p>"<a href="http://manuel.kiessling.net/2012/09/28/applying-the-clean-architecture-to-go-applications/">Applying
+              the Clean Architecture to Go Applications"</a> by Manuel Kiessling is a must-read and informed much of our work.</p>
+          </section>
+          <section>
+            <h2>Code generation</h2>
+            <p>Our next frontier is automatically generating much our code.</p>
+            <p>go 1.4 and <code>go generate</code> are very good at this.</p>
+          </section>
         </section>
 
         <section>
@@ -136,20 +235,59 @@
             <h1>Lesson &numero;2</h1>
             <h3>Concurrency is awesome.</h3>
           </section>
+          <section>
+            <script src="https://gist.github.com/cgansen/6046d4f1843e6e835406.js"></script>
+          </section>
+          <section>
+            <h2>Fork work to the background</h2>
+          </section>
+          <section>
+            <p>A common API service handler pattern is:</p>
+            <ol>
+              <li>read client input</li>
+              <li>marshal input to a data structure</li>
+              <li>do "work" with the input</li>
+              <li>marshal result of work to an output</li>
+              <li>send response to client</li>
+            </ol>
+          </section>
+          <section>
+            <ol>
+              <li>read in a JSON respresentation of a donation</li>
+              <li>process the donation</li>
+              <li>send email notifications</li>
+              <li>update metrics services</li>
+              <li>publish activities to feeds</li>
+              <li>queue for later processing</li>
+              <li>respond to client with success message</li>
+            </ol>
+          </section>
+          <section>
+            <ol>
+              <li>read in a JSON respresentation of a donation</li>
+              <li>process the donation</li>
+              <li style="color:red;">respond to client with success message</li>
+              <li>send email notifications</li>
+              <li>update metrics services</li>
+              <li>publish activities to feeds</li>
+              <li>queue for later processing</li>
+            </ol>
+          </section>
+
         </section>
 
         <section>
           <section>
             <h1>Lesson &numero;3</h1>
-            <h3>The Go ecosystem is robust.</h3>
+            <h3>Deploying and running Go apps is easy.</h3>
+            <h6>(most of the time)</h6>
           </section>
         </section>
 
         <section>
           <section>
             <h1>Lesson &numero;4</h1>
-            <h3>Deploying and running Go apps is easy.</h3>
-            <h6>(most of the time)</h6>
+            <h3>The Go ecosystem is robust.</h3>
           </section>
         </section>
 
