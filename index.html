@@ -181,7 +181,7 @@
           </section>
           <section>
             <h3>Enter the Clean Architecture</h3>
-            <img src="http://blog.8thlight.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg" style="height:493px;width:670px;" />
+            <!-- <img src="http://blog.8thlight.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg" style="height:493px;width:670px;" /> -->
             <p><small>source: <a href="http://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">8th Light</a></small></p>
           </section>
           <section>
@@ -236,7 +236,7 @@
             <h3>Concurrency is awesome.</h3>
           </section>
           <section>
-            <script src="https://gist.github.com/cgansen/6046d4f1843e6e835406.js"></script>
+            <!-- <script src="https://gist.github.com/cgansen/6046d4f1843e6e835406.js"></script> -->
           </section>
           <section>
             <h2>Fork work to the background</h2>
@@ -259,14 +259,14 @@
               <li>update metrics services</li>
               <li>publish activities to feeds</li>
               <li>queue for later processing</li>
-              <li>respond to client with success message</li>
+              <li style="color:lightgreen;">respond to client with success message</li>
             </ol>
           </section>
           <section>
             <ol>
               <li>read in a JSON respresentation of a donation</li>
               <li>process the donation</li>
-              <li style="color:red;">respond to client with success message</li>
+              <li style="color:lightgreen;">respond to client with success message</li>
               <li>send email notifications</li>
               <li>update metrics services</li>
               <li>publish activities to feeds</li>
@@ -280,7 +280,21 @@
           <section>
             <h1>Lesson &numero;3</h1>
             <h3>Deploying and running Go apps is easy.</h3>
-            <h6>(most of the time)</h6>
+          </section>
+          <section>
+            <h2>Wasn't always easy</h2>
+            <p>We started with cross-compiling on local dev machines, then rsync-ing binaries to the production machines, then doing manual restarts.</p>
+            <p>It worked, but with more than a single developer, it quickly became a nightmare.</p>
+          </section>
+          <section>
+            <ol>
+              <li><code>./build_release.sh 1.2.3</code>: create and push tag to Github, kick off release job on CI box.</li>
+              <li>release job runs <code>make build</code>, which builds the binaries via <code>go build</code></li>
+              <li>release job packages binaries into a .rpm and publishes to a S3 bucket</li>
+              <li>We run automated tests to sanity check the release</li>
+              <li>We run <code>yum update ...</code> on app nodes and restart supervisord</li>
+            </ol>
+            <p>time to production is ~ 5 minutes.</p>
           </section>
         </section>
 
@@ -289,12 +303,61 @@
             <h1>Lesson &numero;4</h1>
             <h3>The Go ecosystem is robust.</h3>
           </section>
+          <section>
+            <h3>We heard this a lot when we started</h3>
+            <p><blockquote>
+              We wanted to use Go for our _________, but we looked and _________ wasn't there, so we used _________ instead.
+            </blockquote></p>
+          </section>
+          <section>
+            <h3>Since then: 4x growth in "golang" searches</h3>
+            <img src="http://dl.dropbox.com/u/19098/Screenshots/2~vz.png" />
+          </section>
+          <section>
+            <h3>OSS libraries</h3>
+            <dl>
+              <dt>data layer</dt>
+              <dd>lib/pq, squirrel, go-memcache, elastigo</dd>
+              <dt>api/web</dt>
+              <dd>gocraft/web, goauth2, osin, jwt-go, grace</dd>
+              <dt>backend</dt>
+              <dd>statsd, iron_go, braintree-go, gochimp</dd>
+              <dt>dev</dt>
+              <dd>forego, goconvey, goimports, goreturns, godep, ngrok</dd>
+            </dl>
+          </section>
+          <section>
+            <h3>Dependency management :-(</h3>
+            <p>Don't ever rely on someone else's <code>master</code> to be stable.</p>
+            <p><code>godep</code> is the best out there, but still a blunt and cranky tool.</p>
+            <p>The recent interest from the Go core team in making dep. management easier is promising.</p>
+          </section>
+          <section>
+            <h2>Code generation is the future</h2>
+            <p>We're really excited to see what tools the community release that leverage <code>go generate</code>.</p>
+            <p>Our initial experience with <code>stringer</code> and <code>jsonenums</code> is very positive.</p>
+            <p>We plan to open source our data layer generation code when it's ready.</code>
+          </section>
         </section>
 
         <section>
           <section>
             <h1>Resources</h1>
             <h3>aka: where I go for help</h3>
+          </section>
+          <section>
+            <h3>"Effective Go"</h3>
+            <p>I read this every day for three months, and still go back to it regularly.</p>
+            <p><a href="https://golang.org/doc/effective_go.html">https://golang.org/doc/effective_go.html</a></p>
+          </section>
+          <section>
+            <h3>Go standard library</h3>
+            <p>The standard library code is full of clear, concise Go code, and lots of comments. It is an inspiration.</p>
+          </section>
+          <section>
+            <h3>Golang Weekly</h3>
+            <p><a href="http://golangweekly.com/issues">http://golangweekly.com/issues</a></p>
+            <p>Great way to stay abreast of new libraries, topics in the community, and Go success stories.</p>
           </section>
         </section>
 
