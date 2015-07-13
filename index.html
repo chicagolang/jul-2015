@@ -184,7 +184,7 @@
                         ...
                     jobs
                         advisementmonitor
-                        ...                    
+                        ...
                     lib
                         attrs
                         cache
@@ -222,7 +222,7 @@
             <p>Our next frontier is automatically generating much our code.</p>
             <p>go 1.4 and <code>go generate</code> are very good at this.</p>
           </section>
-          
+
           <section>
               <h2>Enter mapper</h2>
               <p>Small tool that creates basic model code (DB CRUD, and some other bits)</p>
@@ -267,7 +267,7 @@ func (mapper Mapper) Count(clause string, args ...interface{}) (int, error) {
     }
 
     return c, nil
-}                      
+}
 </code></pre>
           </section>
           <section>
@@ -279,7 +279,7 @@ func (mapper Mapper) Count(clause string, args ...interface{}) (int, error) {
                       <li>Eliminated small discrepancies across the codebase.</li>
                   </ol>
               </p>
-          </section>                    
+          </section>
         </section>
 
         <section>
@@ -293,15 +293,15 @@ func (mapper Mapper) Count(clause string, args ...interface{}) (int, error) {
           <section>
               <pre><code>var checks = []*healthCheck{
   &healthCheck{
-      Name: "db", 
+      Name: "db",
       Fn: healthcheck.Database{DB: c.DB}.Check,
   },
   &healthCheck{
-      Name: "elasticsearch", 
+      Name: "elasticsearch",
       Fn: healthcheck.Elasticsearch{}.Check,
   },
   &healthCheck{
-      Name: "memcache", 
+      Name: "memcache",
       Fn: healthcheck.Memcache{MC: c.Config["PARADE_MEMCACHE_SERVERS"].(string)}.Check,
   },
 }</code></pre>
@@ -374,6 +374,15 @@ c.Response["overall_healthy"] = healthy
             </ol>
           </section>
           <section>
+            <h2>Anonymous funcs = :-)</h2>
+            <pre><code>go func(){
+        go counters()
+        go emails()
+        go alerts()
+}()</code></pre>
+<p><small>Caveat: you still need to check for an recover from errors in goroutines!</small></p>
+          </section>
+          <section>
             <p>We've gone through our code with a fine-toothed comb to see what work absolutely has to happen synchronously, and what can happen in the background.</p>
             <p>We've found that in most cases, a bulk of our work can happen asynchronously.</p>
             <p>YMMV.</p>
@@ -405,7 +414,6 @@ c.Response["overall_healthy"] = healthy
                <p><a href="http://blog.crowdpatent.com/a-go-docker-workflow/"><img src="http://dl.dropbox.com/u/19098/Screenshots/f_hs.png" /></a></p>
               <p>We have containerized all of our background tasks.</p>
               <p>Once we have time and/or energy to migrate into VPC, we'll containerize the API and start using AWS ECS.</p>
-             
           </section>
         </section>
 
